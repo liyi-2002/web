@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import neauLogo from '../assets/neau-logo.png';
 import zjuLogo from '../assets/zju-logo.png';
+import githubLogo from '../assets/github.png';
 ---
 
 <!doctype html>
@@ -33,6 +34,9 @@ import zjuLogo from '../assets/zju-logo.png';
 						</div>
 					</li>
 				</ul>
+			</section>
+			<section class="education">
+				<h2>My Github: <a href="https://github.com/liyi-2002" target="_blank" rel="noopener"><img class="github-logo" src={githubLogo.src} alt="GitHub" /></a></h2>
 			</section>
 		</main>
 		<Footer />
@@ -73,6 +77,12 @@ import zjuLogo from '../assets/zju-logo.png';
 		height: 72px;
 		object-fit: contain;
 		flex-shrink: 0;
+	}
+	.education .github-logo {
+		height: 52px;
+		width: auto;
+		vertical-align: middle;
+		object-fit: contain;
 	}
 	.education .info p {
 		margin: 0;
