@@ -1,13 +1,21 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import { Image } from 'astro:assets';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import ningboxiyang from '../assets/ningboxiyang.jpg';
 ---
 
-<Layout
-	title="关于我"
-	description="关于李毅"
-	pubDate={new Date('Oct 30 2026')}
-	heroImage={AboutHeroImage}
->
-	<!-- 正文已清空。想好自我介绍后,把文字写在这行注释的下面,普通段落直接写文字即可 -->
-</Layout>
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="其他" description="其他内容" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<Image src={ningboxiyang} width={720} alt="照片" />
+		</main>
+		<Footer />
+	</body>
+</html>
