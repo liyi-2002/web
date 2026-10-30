@@ -3,6 +3,8 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import neauLogo from '../assets/neau-logo.png';
+import zjuLogo from '../assets/zju-logo.jpg';
 ---
 
 <!doctype html>
@@ -13,11 +15,80 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>李毅</h1>
 			<p>
-				本人维护的个人网站。
+				所有内容由liyi负责维护。
 			</p>
+			<section class="education">
+				<h2>Education Experience</h2>
+				<ul>
+					<li>
+						<img class="logo" src={neauLogo.src} alt="Northeast Agricultural University" width="96" height="96" />
+						<div class="info">
+							<p class="school">Northeast Agricultural University</p>
+							<p class="detail">B.S. in Smart Agriculture · 2021 – 2025</p>
+						</div>
+					</li>
+					<li>
+						<img class="logo" src={zjuLogo.src} alt="Zhejiang University" width="96" height="96" />
+						<div class="info">
+							<p class="school">Zhejiang University</p>
+							<p class="detail">M.S. in Agronomy &amp; Seed Industry · 2025 – 2028</p>
+						</div>
+					</li>
+				</ul>
+			</section>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	body {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	body main {
+		flex: 1;
+		margin: 0 auto 0 max(1.5em, 8vw);
+	}
+	.education {
+		margin-top: 2rem;
+		text-align: left;
+	}
+	.education h2 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin-bottom: 1.5rem;
+	}
+	.education ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+	.education li {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+	}
+	.education .logo {
+		width: 96px;
+		height: 96px;
+		object-fit: contain;
+		flex-shrink: 0;
+	}
+	.education .info p {
+		margin: 0;
+	}
+	.education .school {
+		font-weight: 700;
+		color: rgb(var(--black));
+	}
+	.education .detail {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+	}
+</style>
