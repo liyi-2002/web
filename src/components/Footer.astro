@@ -4,12 +4,26 @@ const today = new Date();
 
 <footer>
 	&copy; {today.getFullYear()} 李毅 · 保留所有权利
+	<div class="visitor-count">
+		<span id="busuanzi_container_site_pv">本站总访问量 <span id="busuanzi_value_site_pv"></span> 次</span>
+		<span class="sep">·</span>
+		<span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv"></span> 人</span>
+	</div>
 </footer>
+<script is:inline async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <style>
 	footer {
 		padding: 1.25em 1em 1.5em 1em;
 		background: transparent;
 		color: rgb(var(--gray));
 		text-align: center;
+	}
+	.visitor-count {
+		margin-top: 0.5em;
+		font-size: 0.8rem;
+		color: rgb(var(--gray));
+	}
+	.visitor-count .sep {
+		margin: 0 0.4em;
 	}
 </style>
