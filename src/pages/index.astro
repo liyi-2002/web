@@ -19,7 +19,13 @@ import renImg from '../assets/ren.jpg';
 		<Header />
 		<main>
 			<div class="profile">
-				<Image class="avatar" src={renImg} width={440} loading="eager" alt="李毅的个人照片" />
+				<div class="avatar-col">
+					<Image class="avatar" src={renImg} width={440} loading="eager" alt="李毅的个人照片" />
+					<div class="contact">
+						<p><a href="mailto:liyi_lll@126.com">liyi_lll@126.com</a></p>
+						<p><a href="mailto:liyi11@zju.edu.cn">liyi11@zju.edu.cn</a></p>
+					</div>
+				</div>
 				<div class="profile-info">
 					<section class="education">
 						<h2>My Educational Background:</h2>
@@ -66,6 +72,24 @@ import renImg from '../assets/ren.jpg';
 		height: auto;
 		border-radius: 12px;
 		flex-shrink: 0;
+	}
+	.avatar-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		flex-shrink: 0;
+	}
+	.contact p {
+		margin: 0;
+		font-size: 0.8rem;
+	}
+	.contact a {
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+	}
+	.contact a:hover {
+		color: var(--accent);
+		text-decoration: underline;
 	}
 	.profile-info {
 		flex: 1;
