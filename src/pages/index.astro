@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
@@ -6,6 +7,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import neauLogo from '../assets/neau-logo.png';
 import zjuLogo from '../assets/zju-logo.png';
 import githubLogo from '../assets/github.png';
+import renImg from '../assets/ren.jpg';
 ---
 
 <!doctype html>
@@ -16,28 +18,33 @@ import githubLogo from '../assets/github.png';
 	<body>
 		<Header />
 		<main>
-			<section class="education">
-				<h2>My Educational Background:</h2>
-				<ul>
-					<li>
-						<img class="logo" src={neauLogo.src} alt="Northeast Agricultural University" width="96" height="96" />
-						<div class="info">
-							<p class="school">Northeast Agricultural University</p>
-							<p class="detail">B.S. in Smart Agriculture · 2021 – 2025</p>
-						</div>
-					</li>
-					<li>
-						<img class="logo" src={zjuLogo.src} alt="Zhejiang University" width="96" height="96" />
-						<div class="info">
-							<p class="school">Zhejiang University</p>
-							<p class="detail">M.S. in Agronomy &amp; Seed Industry · 2025 – 2028</p>
-						</div>
-					</li>
-				</ul>
-			</section>
-			<section class="education">
-				<h2>My GitHub: <a href="https://github.com/liyi-2002" target="_blank" rel="noopener"><img class="github-logo" src={githubLogo.src} alt="GitHub" /></a></h2>
-			</section>
+			<div class="profile">
+				<Image class="avatar" src={renImg} width={440} loading="eager" alt="李毅的个人照片" />
+				<div class="profile-info">
+					<section class="education">
+						<h2>My Educational Background:</h2>
+						<ul>
+							<li>
+								<img class="logo" src={neauLogo.src} alt="Northeast Agricultural University" width="96" height="96" />
+								<div class="info">
+									<p class="school">Northeast Agricultural University (CHINA)</p>
+									<p class="detail">B.S. in Smart Agriculture · 2021 – 2025</p>
+								</div>
+							</li>
+							<li>
+								<img class="logo" src={zjuLogo.src} alt="Zhejiang University" width="96" height="96" />
+								<div class="info">
+									<p class="school">Zhejiang University (CHINA)</p>
+									<p class="detail">M.S. in Agronomy &amp; Seed Industry · 2025 – 2028</p>
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section class="education">
+						<h2>My GitHub: <a href="https://github.com/liyi-2002" target="_blank" rel="noopener"><img class="github-logo" src={githubLogo.src} alt="GitHub" /></a></h2>
+					</section>
+				</div>
+			</div>
 		</main>
 		<Footer />
 	</body>
@@ -46,10 +53,35 @@ import githubLogo from '../assets/github.png';
 <style>
 	body main {
 		flex: 1;
-		margin: 0 auto 0 max(1.5em, 8vw);
+		margin: 0 auto 0 max(1.5em, 5vw);
+	}
+	.profile {
+		display: flex;
+		align-items: flex-start;
+		gap: 5rem;
+		margin-top: 0.8rem;
+	}
+	.profile .avatar {
+		width: 220px;
+		height: auto;
+		border-radius: 12px;
+		flex-shrink: 0;
+	}
+	.profile-info {
+		flex: 1;
+		min-width: 0;
+	}
+	@media (max-width: 720px) {
+		.profile {
+			flex-direction: column;
+			align-items: center;
+		}
+		.profile .avatar {
+			width: 180px;
+		}
 	}
 	.education {
-		margin-top: 2rem;
+		margin-top: 1.5rem;
 		text-align: left;
 	}
 	.education h2 {
