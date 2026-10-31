@@ -19,13 +19,40 @@ const posts = (await getCollection('blog')).sort(
 		<style>
 			main {
 				width: 960px;
+				margin: 0 auto 0 max(1.5em, 7vw);
+			}
+			.modules {
+				display: flex;
+				flex-direction: column;
+				gap: 2rem;
+			}
+			.module h2 {
+				font-size: 1.25rem;
+				font-weight: 600;
+				margin: 0 0 0.6em 0;
+				color: rgb(var(--black));
+			}
+			.module-box {
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 12px;
+				padding: 1em 1.25em;
+				background: #fff;
+				box-shadow: 0 1px 6px rgba(var(--gray), 10%);
+			}
+			.module-scroll {
+				height: 300px;
+				overflow-y: auto;
+				padding-right: 0.5em;
+			}
+			.module-scroll p {
+				margin: 0 0 0.75em 0;
 			}
 			ul {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 2rem;
 				list-style-type: none;
-				margin: 0;
+				margin: 2rem 0 0 0;
 				padding: 0;
 			}
 			ul li {
@@ -89,11 +116,38 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
+			<section class="modules">
+				<div class="module">
+					<h2>Scientific Research</h2>
+					<div class="module-box">
+						<div class="module-scroll">
+							<p>Research projects, papers, and progress will be shared here.</p>
+							<p>More coming soon.</p>
+						</div>
+					</div>
+				</div>
+				<div class="module">
+					<h2>Hobbies &amp; Creations</h2>
+					<div class="module-box">
+						<div class="module-scroll">
+							<p>Photography, writing, tools, and small projects I enjoy.</p>
+						</div>
+					</div>
+				</div>
+				<div class="module">
+					<h2>Other Shares</h2>
+					<div class="module-box">
+						<div class="module-scroll">
+							<p>Other things I'd like to share with you.</p>
+						</div>
+					</div>
+				</div>
+			</section>
 			<section>
 				<ul>
 					{posts.map((post) => (
 						<li>
-							<a href={`/blog/${post.id}/`}>
+							<a href={`/content/${post.id}/`}>
 								{post.data.heroImage && (
 									<Image width={720} height={360} src={post.data.heroImage} alt="" />
 								)}
