@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import evo2Figure from '../../assets/evo2-figure.png';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -18,16 +19,45 @@ const posts = (await getCollection('blog')).sort(
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
 			main {
-				width: 960px;
+				width: min(1800px, 90%);
 				margin: 0 auto 0 max(1.5em, 7vw);
 			}
 			.modules {
 				display: flex;
 				flex-direction: column;
-				gap: 2rem;
+				gap: 1.5rem;
+			}
+			.content-grid {
+				display: flex;
+				gap: 2.5rem;
+				align-items: stretch;
+			}
+			.content-grid .modules {
+				flex: 1.1;
+				min-width: 0;
+			}
+			.side-module {
+				flex: 0.9;
+				display: flex;
+				flex-direction: column;
+			}
+			.side-module .module-box {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+			}
+			.side-module .module-scroll {
+				flex: 1;
+				height: auto;
+			}
+			.side-module h2 {
+				font-size: 1.5rem;
+				font-weight: 600;
+				margin: 0 0 0.6em 0;
+				color: rgb(var(--black));
 			}
 			.module h2 {
-				font-size: 1.25rem;
+				font-size: 1.5rem;
 				font-weight: 600;
 				margin: 0 0 0.6em 0;
 				color: rgb(var(--black));
@@ -46,6 +76,52 @@ const posts = (await getCollection('blog')).sort(
 			}
 			.module-scroll p {
 				margin: 0 0 0.75em 0;
+			}
+			.module-scroll a {
+				color: var(--accent);
+				text-decoration: none;
+			}
+			.module-scroll a:hover {
+				text-decoration: underline;
+			}
+			.paper {
+				display: flex;
+				align-items: center;
+				gap: 1.25rem;
+				padding: 0.6em 0.25em;
+			}
+			.module-scroll > * {
+				border-bottom: 1px solid rgb(var(--gray-light));
+				padding-bottom: 0.75em;
+			}
+			.paper-title {
+				margin: 0;
+				flex: 1;
+			}
+			.paper-title a {
+				color: rgb(var(--black));
+				font-weight: 700;
+				font-size: 1.2rem;
+				text-decoration: none;
+			}
+			.paper-title a:hover {
+				color: var(--accent);
+				text-decoration: underline;
+			}
+			.paper-thumb {
+				flex-shrink: 0;
+			}
+			.paper-img {
+				width: 120px;
+				height: 72px;
+				object-fit: cover;
+				border-radius: 6px;
+				display: block;
+			}
+			@media (max-width: 720px) {
+				.paper {
+					flex-wrap: wrap;
+				}
 			}
 			ul {
 				display: flex;
@@ -97,6 +173,13 @@ const posts = (await getCollection('blog')).sort(
 				box-shadow: var(--box-shadow);
 			}
 			@media (max-width: 720px) {
+				.content-grid {
+					flex-direction: column;
+				}
+				.side-module {
+					flex: none;
+					width: 100%;
+				}
 				ul {
 					gap: 0.5em;
 				}
@@ -116,18 +199,25 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
+			<div class="content-grid">
 			<section class="modules">
 				<div class="module">
-					<h2>Scientific Research</h2>
+					<h2>Valuable Research Advances</h2>
 					<div class="module-box">
 						<div class="module-scroll">
-							<p>Research projects, papers, and progress will be shared here.</p>
-							<p>More coming soon.</p>
+							<div class="paper">
+								<p class="paper-title">
+									<a href="https://www.nature.com/articles/s41586-026-10176-5" target="_blank" rel="noopener">(2026-10-31) EVO2：全生命域生成式基因组大模型 | <strong><em>Nature</em></strong> | 20260304</a>
+								</p>
+								<a class="paper-thumb" href="https://www.nature.com/articles/s41586-026-10176-5" target="_blank" rel="noopener">
+									<Image class="paper-img" src={evo2Figure} width={240} alt="EVO2 论文图 1" />
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
 				<div class="module">
-					<h2>Hobbies &amp; Creations</h2>
+					<h2>Interesting Ideas &amp; Knowledge</h2>
 					<div class="module-box">
 						<div class="module-scroll">
 							<p>Photography, writing, tools, and small projects I enjoy.</p>
@@ -143,6 +233,15 @@ const posts = (await getCollection('blog')).sort(
 					</div>
 				</div>
 			</section>
+			<aside class="side-module">
+				<h2>My Works</h2>
+				<div class="module-box">
+					<div class="module-scroll">
+						<p>My work content will be shared here.</p>
+					</div>
+				</div>
+			</aside>
+			</div>
 			<section>
 				<ul>
 					{posts.map((post) => (
