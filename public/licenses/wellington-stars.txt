@@ -1,0 +1,12 @@
+Wellington starry night photograph
+
+Photographer: Luca Calderone
+Photo page: https://unsplash.com/photos/a-night-sky-filled-with-lots-of-stars-ar2wBygqRQc
+Original image: https://images.unsplash.com/photo-1687172902141-67b20be1df71
+License: Unsplash License — https://unsplash.com/license
+
+Local files:
+- /landscape/wellington-stars.webp (3200 px wide)
+- /landscape/wellington-stars-mobile.webp (1600 px wide)
+
+The original photograph was resized and compressed to WebP. No crop, color adjustment, or visual alterations were applied.

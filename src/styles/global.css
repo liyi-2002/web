@@ -1,144 +1,102 @@
-/*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
- */
-
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
-	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
-		0 16px 32px rgba(var(--gray), 33%);
+	color-scheme: light;
+	--background: #d0d0d0;
+	--surface: #efefefcf;
+	--text: #252525;
+	--muted: #535353;
+	--accent: #82622d;
+	--accent-text: #735629;
+	--line: #b8b8b8;
+	--page-width: 77rem;
+	--header-height: 4.6rem;
+	--gutter: clamp(1.125rem, 5vw, 5rem);
+	--site-font: 'Times New Roman', STXingkai, '华文行楷', 'Xingkai SC', 'Kaiti SC', KaiTi, serif;
 }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
-	font-family: 'Times New Roman', 'SimSun', '宋体', 'STSong', serif;
-	margin: 0;
-	padding: 0;
-	text-align: left;
-	background: #fff;
 	min-height: 100vh;
+	margin: 0;
 	display: flex;
 	flex-direction: column;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
-	font-size: 20px;
-	line-height: 1.7;
+	background: var(--background);
+	color: var(--text);
+	font: 400 1rem/1.65 var(--site-font);
 }
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: 0 auto;
-	padding: 3em 1em;
-	flex: 1;
+main { flex: 1; }
+h1, h2, h3, p, figure { margin: 0; }
+h1, h2, h3 { line-height: 1.08; text-wrap: balance; }
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+button { font: inherit; }
+::selection { background: var(--accent); color: #fff; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+[hidden] { display: none !important; }
+
+.wrap {
+	width: min(var(--page-width), calc(100% - 2 * var(--gutter)));
+	margin-inline: auto;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
-h1 {
-	font-size: 3.052em;
+.skip-link {
+	position: fixed;
+	z-index: 20;
+	inset: .75rem auto auto .75rem;
+	transform: translateY(-200%);
+	padding: .65rem 1.1rem;
+	border-radius: .3rem;
+	background: var(--accent);
+	color: #fff;
 }
-h2 {
-	font-size: 2.441em;
+.skip-link:focus { transform: none; }
+.eyebrow {
+	color: var(--accent-text);
+	font: 600 .875rem/1.45 var(--site-font);
+	letter-spacing: .11em;
+	text-transform: uppercase;
 }
-h3 {
-	font-size: 1.953em;
-}
-h4 {
-	font-size: 1.563em;
-}
-h5 {
-	font-size: 1.25em;
-}
-strong,
-b {
+.button {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 3rem;
+	padding: .6rem 1.2rem;
+	border: 1px solid var(--line);
+	border-radius: .4rem;
+	background: var(--surface);
+	color: var(--text);
+	text-decoration: none;
 	font-weight: 700;
+	transition: background .2s, border-color .2s, color .2s, transform .2s;
 }
-a {
-	color: var(--accent);
+.button:hover {
+	border-color: var(--accent);
+	background: #ededed;
+	transform: translateY(-2px);
 }
-a:hover {
-	color: var(--accent);
-}
-p {
-	margin-bottom: 1em;
-}
-.prose p {
-	margin-bottom: 2em;
-}
-textarea {
-	width: 100%;
-	font-size: 16px;
-}
-input {
-	font-size: 16px;
-}
-table {
-	width: 100%;
-}
-img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 8px;
-}
-code {
-	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
-	border-radius: 2px;
-}
-pre {
-	padding: 1.5em;
-	border-radius: 8px;
-}
-pre > code {
-	all: unset;
-}
-blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
-}
-hr {
-	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
-}
-@media (max-width: 720px) {
-	body {
-		font-size: 18px;
-	}
-	main {
-		padding: 1em;
-	}
+.button--accent { border-color: var(--accent); background: var(--accent); color: #fff; }
+.button--accent:hover { border-color: #664b20; background: #664b20; }
+.text-link { color: var(--accent-text); text-underline-offset: .28em; }
+.text-link:hover { color: var(--text); }
+
+@media (max-width: 560px) {
+	:root { --header-height: 6rem; }
 }
 
-.sr-only {
-	border: 0;
-	padding: 0;
-	margin: 0;
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
-	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
-	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
-	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
-	white-space: nowrap;
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	*, *::before, *::after {
+		animation-duration: .01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: .01ms !important;
+	}
 }

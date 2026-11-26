@@ -1,23 +1,43 @@
 ---
-import type { HTMLAttributes } from 'astro/types';
+interface Props {
+	href: string;
+	descendantsOf?: string | false;
+}
 
-type Props = HTMLAttributes<'a'>;
-
-const { href, class: className, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+const { href, descendantsOf = href } = Astro.props;
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const destination = href.replace(/\/$/, '') || '/';
+const section = descendantsOf === false ? '' : descendantsOf.replace(/\/$/, '');
+const isCurrentPage = pathname === destination;
+const isActive = isCurrentPage || (section !== '' && pathname.startsWith(section + '/'));
 ---
 
-<a href={href} class:list={[className, { active: isActive }]} {...props}>
+<a href={href} class:list={{ active: isActive }} aria-current={isCurrentPage ? 'page' : isActive ? 'location' : undefined}>
 	<slot />
 </a>
+
 <style>
 	a {
-		display: inline-block;
+		position: relative;
+		display: block;
+		padding: .62rem .7rem;
+		color: var(--muted);
+		font-size: .9375rem;
 		text-decoration: none;
+		white-space: nowrap;
 	}
-	a.active {
-		font-weight: bolder;
+	a:hover, a.active { color: var(--text); }
+	a.active::after {
+		content: '';
+		position: absolute;
+		inset: auto .7rem .25rem;
+		height: 2px;
+		border-radius: 1rem;
+		background: var(--accent);
+	}
+
+	@media (max-width: 480px) {
+		a { padding-inline: .4rem; font-size: .875rem; }
+		a.active::after { inset-inline: .4rem; }
 	}
 </style>

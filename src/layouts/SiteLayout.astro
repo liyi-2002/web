@@ -1,0 +1,35 @@
+---
+import type { ImageMetadata } from 'astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import ParticleSwarm from '../components/ParticleSwarm.astro';
+import LandscapeBackdrop from '../components/LandscapeBackdrop.astro';
+import '../styles/folio.css';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	folio?: boolean;
+}
+
+const { title, description, image, folio = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title} description={description} image={image} />
+	</head>
+	<body class:list={['folio-site', { 'has-particle-swarm': folio, 'has-moonlit-valley': folio }]}>
+		{folio && <LandscapeBackdrop />}
+		{folio && <ParticleSwarm />}
+		<a class="skip-link" href="#main">跳到正文</a>
+		<Header compact={folio} />
+		<main id="main">
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>

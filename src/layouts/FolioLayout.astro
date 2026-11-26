@@ -1,0 +1,137 @@
+---
+import { getCollection } from 'astro:content';
+import SiteLayout from './SiteLayout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_SECTIONS as sections, SITE_TITLE } from '../consts';
+const education = [
+	{ school: 'Zhejiang University', degree: 'M.S. in Agronomy & Seed Industry', dates: '2025–2028' },
+	{ school: 'Northeast Agricultural University', degree: 'B.S. in Smart Agriculture', dates: '2021–2025' },
+];
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+interface Props {
+	title: string;
+	description: string;
+	current: (typeof sections)[number]['key'];
+}
+const { title, description, current } = Astro.props;
+---
+
+<SiteLayout title={title} description={description} folio>
+	<div class="folio-stage" data-folio data-section={current}>
+		<aside class="folio-index" aria-label="个人信息与目录">
+			<h1 class="folio-name" lang="en"><a href="/" data-folio-link>{SITE_TITLE}</a></h1>
+			<nav aria-label="主导航" class="folio-nav">
+				<ul>
+					{sections.map(({ key, label, href }) => (
+						<li><a href={href} aria-current={key === current ? 'page' : undefined} data-folio-link>{label}</a></li>
+					))}
+				</ul>
+			</nav>
+			<div class="folio-details">
+				<section class="folio-education" id="profile" aria-labelledby="education-heading" lang="en">
+					<h2 id="education-heading">Education</h2>
+					<ul>
+						{education.map(({ school, degree, dates }) => (
+							<li>
+								<strong>{school}</strong>
+								<p>{degree}</p>
+								<span>{dates}</span>
+							</li>
+						))}
+					</ul>
+				</section>
+				<address class="folio-contact" id="contact" aria-label="邮箱与 GitHub">
+					<a href="mailto:liyi11@zju.edu.cn">liyi11@zju.edu.cn</a>
+					<a href="mailto:liyi_lll@126.com">liyi_lll@126.com</a>
+					<a href="https://github.com/liyi-2002">GitHub <span>@liyi-2002</span></a>
+				</address>
+			</div>
+		</aside>
+
+		<div class="orbit-viewport">
+		<div class="content-tray" data-content-tray>
+			<svg class="orbit-rail" data-orbit-rail aria-hidden="true" focusable="false">
+				<defs>
+					<linearGradient id="orbit-rail-fade" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0" stop-color="white" stop-opacity=".12" />
+						<stop offset=".15" stop-color="white" stop-opacity=".75" />
+						<stop offset=".5" stop-color="white" />
+						<stop offset=".85" stop-color="white" stop-opacity=".75" />
+						<stop offset="1" stop-color="white" stop-opacity=".12" />
+					</linearGradient>
+				</defs>
+				<path class="orbit-rail-halo" data-orbit-path />
+				<path class="orbit-rail-line" data-orbit-path />
+				{[-1.48, -1.19, -.86, -.5, -.19, .22, .58, .95, 1.27, 1.48].map((angle, index) => (
+					<g data-rail-spark={angle}>
+						<circle class="orbit-light-halo" r={index % 3 === 0 ? 7 : 4} />
+						<circle class="orbit-light" r={index % 3 === 0 ? 2.3 : 1.3} />
+					</g>
+				))}
+				{sections.map(() => (
+					<g data-orbit-tether>
+						<path class="orbit-connector" data-orbit-connector />
+						<g data-orbit-node>
+							<circle class="orbit-light-halo" r="13" />
+							<circle class="orbit-node-ring" r="5.5" />
+							<circle class="orbit-light" r="2.6" />
+						</g>
+						<circle class="orbit-light orbit-endpoint" r="2" data-orbit-endpoint />
+					</g>
+				))}
+			</svg>
+			{sections.map(({ key, label, href, title: pageTitle, description: pageDescription }) => (
+				<section
+					class="tray-panel"
+					data-page={key}
+					data-href={href}
+					data-label={label}
+					data-title={pageTitle}
+					data-description={pageDescription}
+					hidden={key !== current}
+					inert={key !== current}
+					aria-label={label}
+				>
+					<div class="tray-card-wrap tray-card-wrap--back">
+						<div class="tray-card" role="group" aria-label={label + '卡纸 1'}></div>
+					</div>
+					<div class="tray-card-wrap tray-card-wrap--middle">
+						<div class="tray-card" role="group" aria-label={label + '卡纸 2'}></div>
+					</div>
+					<div class="tray-card-wrap tray-card-wrap--front">
+						<div class="tray-card" role="group" aria-label={label + '卡纸 3'}>
+							<h2 class="sr-only" tabindex="-1">{label}</h2>
+							{key === 'notes' && posts.length > 0 && (
+								<div class="tray-content" id="articles">
+									<header class="notes-heading">
+										<h3>手记</h3>
+										<a href="/rss.xml">RSS 订阅</a>
+									</header>
+									<ul class="notes-list">
+										{posts.map(post => (
+											<li>
+												<FormattedDate date={post.data.pubDate} />
+												<h4><a href={'/notes/' + post.id + '/'}>{post.data.title}</a></h4>
+												{post.data.description && <p>{post.data.description}</p>}
+											</li>
+										))}
+									</ul>
+								</div>
+							)}
+						</div>
+					</div>
+				</section>
+			))}
+		</div>
+		</div>
+		<p class="sr-only" id="paper-instructions">拖动卡纸可调整位置。聚焦后可用方向键移动，按住 Shift 可加大步幅，Esc 可取消当前拖动。</p>
+		<p class="sr-only" aria-live="polite" data-folio-status></p>
+	</div>
+</SiteLayout>
+
+<script>
+	import '../scripts/folio';
+</script>
+

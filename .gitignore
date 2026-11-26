@@ -16,6 +16,11 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.*
+!.env.example
+
+# local source-photo archive (not part of the deployed site)
+asset-library/
 
 # macOS-specific files
 .DS_Store

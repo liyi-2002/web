@@ -1,84 +1,174 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import SiteLayout from './SiteLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<SiteLayout title={title} description={description} image={heroImage}>
+	<article class="wrap article">
+		<header class="article-header">
+			<nav aria-label="文章导航">
+				<a class="text-link" href="/notes/">返回手记</a>
+			</nav>
+			<div class="article-date">
+				<FormattedDate date={pubDate} />
+				{updatedDate && <span>更新于 <FormattedDate date={updatedDate} /></span>}
+			</div>
+			<h1>{title}</h1>
+			<p class="article-description">{description}</p>
+		</header>
+		{heroImage && (
+			<Image
+				class="article-image"
+				width={1200}
+				widths={[560, 880, 1200]}
+				sizes="(max-width: 55rem) 90vw, 53rem"
+				src={heroImage}
+				alt=""
+			/>
+		)}
+		<div class="prose">
+			<slot />
+		</div>
+	</article>
+</SiteLayout>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{updatedDate && (
-								<div class="last-updated-on">
-									Last updated on <FormattedDate date={updatedDate} />
-								</div>
-							)}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+<style>
+	.article {
+		max-width: 57rem;
+		padding: clamp(1.4rem, 6vw, 5.2rem);
+		margin-block: clamp(1.5rem, 5vw, 5rem) clamp(3rem, 7vw, 7rem);
+		background: var(--paper);
+		border: 1px solid #fffcf1;
+		box-shadow: 0 2px 0 #ddd9c8, 0 4px 0 #f2efe1, 0 17px 35px -20px #343a29a8;
+	}
+
+	.article-header, .prose {
+		max-width: 44rem;
+		margin-inline: auto;
+	}
+
+	.article-header {
+		border-bottom: 1px solid var(--line);
+		padding-bottom: clamp(1.5rem, 3.5vw, 2.35rem);
+	}
+
+	.article-header h1, .prose :global(h2), .prose :global(h3) {
+		font-family: var(--site-font);
+	}
+
+	.article-header h1 {
+		margin: .7rem 0 1rem;
+		font-size: clamp(2.3rem, 6vw, 4.85rem);
+		font-weight: 500;
+		letter-spacing: -.045em;
+		overflow-wrap: anywhere;
+	}
+
+	.article-description {
+		color: var(--muted);
+		font-size: clamp(1.05rem, 2vw, 1.2rem);
+		line-height: 1.55;
+		overflow-wrap: anywhere;
+	}
+
+	.article-date {
+		display: flex;
+		flex-wrap: wrap;
+		gap: .25rem 1rem;
+		margin-top: clamp(1.5rem, 4vw, 3rem);
+		color: var(--accent-text);
+		font: .875rem/1.45 var(--site-font);
+	}
+
+	.article-image {
+		width: 100%;
+		height: auto;
+		max-width: 53rem;
+		margin: 1.8rem auto 0;
+		border: 1px solid var(--line);
+		border-radius: .3rem;
+	}
+
+	.prose {
+		margin-top: clamp(1.6rem, 4vw, 3.2rem);
+		font-size: clamp(1.03rem, 1.6vw, 1.13rem);
+		line-height: 1.82;
+		overflow-wrap: anywhere;
+	}
+
+	.prose > :global(*) {
+		margin-block: 0 1.15em;
+	}
+
+	.prose :global(h2), .prose :global(h3) {
+		margin: 1.65em 0 .55em;
+		font-weight: 600;
+		line-height: 1.25;
+	}
+
+	.prose :global(h2) {
+		font-size: 1.65em;
+	}
+
+	.prose :global(h3) {
+		font-size: 1.33em;
+	}
+
+	.prose :global(a) {
+		color: var(--accent-text);
+		text-underline-offset: .2em;
+	}
+
+	.prose :global(pre) {
+		max-width: 100%;
+		overflow-x: auto;
+		padding: .9rem 1.1rem;
+		border: 1px solid var(--line);
+		border-radius: .25rem;
+		background: var(--surface);
+		font-size: .86em;
+		line-height: 1.6;
+	}
+
+	.prose :global(:not(pre) > code) {
+		padding: .1em .28em;
+		border-radius: .15rem;
+		background: var(--surface);
+		color: var(--accent-text);
+		font-size: .9em;
+	}
+
+	.prose :global(blockquote) {
+		margin-inline: 0;
+		padding: .65rem 1rem;
+		border-inline-start: 2px solid var(--accent);
+		background: var(--surface);
+		color: var(--muted);
+	}
+
+	.prose :global(table) {
+		display: block;
+		max-width: 100%;
+		overflow-x: auto;
+		border-collapse: collapse;
+	}
+
+	.prose :global(th), .prose :global(td) {
+		padding: .45rem .75rem;
+		border: 1px solid var(--line);
+		text-align: start;
+	}
+
+	.prose :global(th) { background: var(--surface); }
+
+	.prose :global(hr) {
+		border: 0;
+		border-top: 1px solid var(--line);
+	}
+</style>
