@@ -110,7 +110,7 @@ export function enableCardDragging(tray: HTMLElement) {
 	}
 	function eventCard(event: Event) {
 		const element = event.target instanceof Element ? event.target : null;
-		if (!element || element.closest('[inert], .tray-content, a, button, input, textarea, select, [contenteditable]')) return;
+		if (!element || element.closest('[inert], .tray-content, [data-calendar], [data-card-widget], a, button, input, textarea, select, [contenteditable]')) return;
 		const paper = element.closest<HTMLElement>('.tray-card');
 		return paper ? byPaper.get(paper) : undefined;
 	}
@@ -125,7 +125,7 @@ export function enableCardDragging(tray: HTMLElement) {
 		card.paper.setAttribute('aria-describedby', 'paper-instructions');
 		card.paper.setAttribute('aria-roledescription', '可移动卡纸');
 		card.wrapper.style.zIndex = String(layer);
-		if (card.paper.querySelector('.tray-content')) {
+		if (card.paper.querySelector('.tray-content, [data-calendar], [data-card-widget]')) {
 			card.paper.dataset.hasContent = '';
 			for (const side of ['top', 'right', 'bottom', 'left']) {
 				const edge = document.createElement('span');
@@ -137,6 +137,9 @@ export function enableCardDragging(tray: HTMLElement) {
 	});
 	tray.addEventListener('pointerdown', event => {
 		if (drag || !event.isPrimary || event.button !== 0 || tray.hasAttribute('data-transitioning')) return;
+		const paper = event.target instanceof Element && !event.target.closest('[inert]') ? event.target.closest<HTMLElement>('.tray-card') : null;
+		const touched = paper ? byPaper.get(paper) : undefined;
+		if (touched) bringToFront(touched);
 		const card = eventCard(event);
 		if (!card) return;
 		event.preventDefault();

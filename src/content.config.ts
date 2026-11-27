@@ -10,6 +10,9 @@ const blog = defineCollection({
 		z.object({
 			title: z.string(),
 			description: z.string(),
+			section: z.enum(['sharing', 'notes']).default('notes'),
+			tags: z.array(z.string()).default([]),
+			draft: z.boolean().default(false),
 			// Transform string to Date object
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
@@ -17,4 +20,20 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+const photography = defineCollection({
+	loader: glob({ base: './src/content/photography', pattern: '**/*.json' }),
+	schema: ({ image }) => z.object({
+		title: z.string().min(1),
+		image: image(),
+		alt: z.string().min(1),
+		description: z.string().default(''),
+		date: z.coerce.date(),
+		updatedDate: z.coerce.date().optional(),
+		tags: z.array(z.string()).default([]),
+		camera: z.string().optional(),
+		location: z.string().optional(),
+		draft: z.boolean().default(false),
+	}),
+});
+
+export const collections = { blog, photography };

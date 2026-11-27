@@ -1,10 +1,11 @@
 ---
 import FormattedDate from './FormattedDate.astro';
+import type { SiteEntry } from '../data/site-content';
 
 interface Props {
 	section: string;
 	label: string;
-	items?: { title: string; href: string; date?: Date; description?: string }[];
+	items?: SiteEntry[];
 }
 const { section, label, items = [] } = Astro.props;
 // Empty cards preview the interaction until this section has real entries.
@@ -14,9 +15,10 @@ const entries = items.length ? items : Array.from({ length: 8 }, () => null);
 <div class="content-loop" data-content-loop tabindex="0" role="region" aria-roledescription="三维循环内容列表" aria-label={label + '内容'} aria-describedby={'loop-help-' + section}>
 	<div class="content-loop__track" data-loop-track role="list">
 		{entries.map((entry, index) => (
-			<div class="content-loop__item" data-loop-item role="listitem">
+			<div class="content-loop__item" data-loop-item data-entry-id={entry?.id} role="listitem">
 				{entry ? (
-					<a class="content-loop__card" href={entry.href}>
+					<a class="content-loop__card" href={entry.href} data-photo-id={entry.photo ? entry.id : undefined}>
+						{entry.photo && <img class="content-loop__photo" src={entry.photo.thumbnail} alt={entry.photo.alt} width={entry.photo.width} height={entry.photo.height} loading="lazy" decoding="async" draggable="false" />}
 						<div class="content-loop__copy">
 							{entry.date && <FormattedDate date={entry.date} />}
 							<h3>{entry.title}</h3>
@@ -73,6 +75,7 @@ const entries = items.length ? items : Array.from({ length: 8 }, () => null);
 		.content-loop__card:hover { border-color: #ffffff80; box-shadow: inset 0 1px 0 #ffffff26, 0 0 12px -4px #ffffff12, 0 12px 28px -18px #00000080; }
 	}
 	.content-loop__card:focus-visible { outline: 2px solid #f2f2f2; outline-offset: -4px; }
+	.content-loop__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; opacity: .92; }
 	.content-loop__copy {
 		position: relative; width: 100%; padding: clamp(1rem, 3cqw, 2rem); overflow-wrap: anywhere;
 		background: linear-gradient(transparent, #050709c9); text-shadow: 0 1px 8px #00000080;

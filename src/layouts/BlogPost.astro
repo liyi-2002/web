@@ -6,14 +6,14 @@ import SiteLayout from './SiteLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, section } = Astro.props;
 ---
 
 <SiteLayout title={title} description={description} image={heroImage}>
 	<article class="wrap article">
 		<header class="article-header">
 			<nav aria-label="文章导航">
-				<a class="text-link" href="/notes/">返回手记</a>
+				<a class="text-link" href={'/' + section + '/'}>返回{section === 'sharing' ? '分享' : '手记'}</a>
 			</nav>
 			<div class="article-date">
 				<FormattedDate date={pubDate} />

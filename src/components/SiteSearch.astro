@@ -1,0 +1,115 @@
+---
+import type { SearchEntry } from '../scripts/search-index';
+interface Props { entries: SearchEntry[] }
+const { entries } = Astro.props;
+const index = JSON.stringify(entries).replace(/</g, '\\u003c');
+---
+
+<site-search class="site-search">
+	<button class="site-search__trigger" type="button" data-search-open aria-label="搜索全站内容" aria-haspopup="dialog" aria-expanded="false" aria-controls="site-search-dialog">
+		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 5 5" /></svg>
+		<span lang="en">Search</span><kbd data-search-shortcut aria-hidden="true">Ctrl K</kbd>
+	</button>
+	<dialog id="site-search-dialog" class="site-search__dialog" aria-labelledby="site-search-title" aria-describedby="site-search-help">
+		<div class="site-search__shell">
+			<header class="site-search__header">
+				<div><p class="site-search__eyebrow">LIYI’S CHANNEL</p><h2 id="site-search-title">搜索内容</h2></div>
+				<button class="site-search__close" type="button" data-search-close aria-label="关闭搜索">关闭 <kbd aria-hidden="true">Esc</kbd></button>
+			</header>
+			<div class="site-search__field">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 5 5" /></svg>
+				<label class="sr-only" for="site-search-query">搜索标题、标签或描述</label>
+				<input id="site-search-query" data-search-input type="search" placeholder="搜索标题、标签或关键词…" autocomplete="off" spellcheck="false" maxlength="160" aria-controls="site-search-results" aria-describedby="site-search-count" />
+			</div>
+			<div class="site-search__filters" role="group" aria-label="搜索栏目">
+				{[{key:'all',label:'全部'}, {key:'sharing',label:'分享'}, {key:'notes',label:'手记'}, {key:'photography',label:'摄影'}].map(filter => (
+					<button type="button" data-search-filter={filter.key} aria-pressed={filter.key === 'all'}>{filter.label}</button>
+				))}
+			</div>
+			<p id="site-search-count" class="site-search__count" data-search-count role="status" aria-live="polite" aria-atomic="true"></p>
+			<div class="site-search__results" data-search-scroll>
+				<ul id="site-search-results" data-search-results aria-label="搜索结果"></ul>
+				<div class="site-search__empty" data-search-empty>
+					<span class="site-search__empty-orbit" aria-hidden="true"></span>
+					<h3 data-search-empty-title>内容还在整理中</h3>
+					<p data-search-empty-copy>分享、手记和摄影发布后，会在这里出现。</p>
+				</div>
+			</div>
+			<footer class="site-search__footer" id="site-search-help">搜索全站内容，点击结果定位卡片。<span>↑↓ 浏览 · Enter 选择 · Esc 关闭</span></footer>
+		</div>
+	</dialog>
+	<script type="application/json" data-search-index set:html={index}></script>
+</site-search>
+
+<script>
+	import '../scripts/site-search';
+</script>
+
+<style>
+	.site-search { position: absolute; top: .8rem; right: 1rem; z-index: 1100; display: block; width: 10.25rem; }
+	.site-search button, .site-search input { font-family: var(--site-font); }
+	.site-search button { cursor: pointer; }
+	.site-search svg { stroke: currentColor; stroke-width: 1.45; stroke-linecap: round; flex: none; }
+	.site-search kbd { font: 400 .75rem/1.2 'Times New Roman', Times, serif; letter-spacing: .025em; }
+	.site-search__trigger {
+		display: flex; align-items: center; gap: .55rem; width: 100%; min-height: 2rem; padding: .3rem .65rem;
+		border: 1px solid #ffffff29; border-radius: 2rem; background: #080a0d4d; color: #e5e5df;
+		font-size: 1rem; line-height: 1.3; box-shadow: inset 0 1px 0 #ffffff0a; text-shadow: 0 1px 5px #000;
+		transition: background 160ms, border-color 160ms;
+	}
+	.site-search__trigger kbd { margin-left: auto; color: #bdbfbe; }
+	.site-search__trigger:hover { border-color: #ffffff66; background: #080a0d80; }
+	.site-search__dialog {
+		position: fixed; inset: 0; width: min(40rem, calc(100vw - 2rem)); max-width: none;
+		max-height: min(42rem, calc(100svh - 3rem)); margin: auto; padding: 0; overflow: hidden;
+		color: #f3f1ea; background: #090c10f5; border: 1px solid #ffffff33; border-radius: 1rem;
+		box-shadow: inset 0 1px 0 #ffffff12, 0 26px 90px #0009; color-scheme: dark;
+		font-family: var(--site-font); text-align: left;
+	}
+	.site-search__dialog::backdrop { background: #020407a8; backdrop-filter: blur(7px); }
+	.site-search__shell { display: flex; flex-direction: column; max-height: inherit; }
+	.site-search__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 1.5rem 1.5rem 1.15rem; }
+	.site-search__eyebrow { margin: 0 0 .45rem; font: 400 .75rem/1.2 'Times New Roman', Times, serif; letter-spacing: .15em; color: #b7b9ba; }
+	.site-search h2 { margin: 0; font-size: 1.6rem; font-weight: 400; line-height: 1.3; }
+	.site-search__close { border: 0; background: transparent; color: #c9c9c5; font-size: .875rem; min-height: 2rem; padding: .2rem 0 .2rem .5rem; }
+	.site-search__close kbd { margin-left: .45rem; padding: .15rem .25rem; border: 1px solid #ffffff26; border-radius: .2rem; }
+	.site-search__field { display: flex; align-items: center; gap: .7rem; margin: 0 1.5rem; padding: .75rem .85rem; border: 1px solid #ffffff33; border-radius: .5rem; color: #c7c9c8; background: #ffffff04; }
+	.site-search__field:focus-within { border-color: #e2d4b4a6; box-shadow: 0 0 0 2px #e2d4b40a; }
+	.site-search input { width: 100%; min-width: 0; padding: 0; border: 0; outline: none; background: transparent; color: #fff; font-size: 1.0625rem; line-height: 1.5; }
+	.site-search input::placeholder { color: #9a9e9e; }
+	.site-search__filters { display: flex; flex-wrap: wrap; gap: .4rem; padding: .85rem 1.5rem .35rem; }
+	.site-search__filters button { min-height: 2rem; padding: .2rem .8rem; border: 1px solid transparent; border-radius: 2rem; background: transparent; color: #b8bcbb; font-size: .9375rem; line-height: 1.4; }
+	.site-search__filters button[aria-pressed="true"] { color: #f3ebda; background: #e2d4b40d; border-color: #e2d4b447; }
+	.site-search__filters button:hover { color: #fff; }
+	.site-search__count { min-height: 1.25rem; margin: 0; padding: .25rem 1.6rem .65rem; color: #a4aaa9; font-size: .875rem; line-height: 1.4; }
+	.site-search__results { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #ffffff38 transparent; }
+	.site-search ul { margin: 0; padding: 0 .75rem .75rem; list-style: none; }
+	.site-search :global([data-search-results] li + li) { border-top: 1px solid #ffffff0d; }
+	.site-search :global(.search-result) { display: block; padding: .85rem .85rem; border: 1px solid transparent; border-radius: .5rem; color: inherit; text-decoration: none; }
+	.site-search :global(.search-result:hover), .site-search :global(.search-result:focus-visible) { background: #ffffff06; border-color: #ffffff24; outline-offset: -1px; }
+	.site-search :global(.search-result__meta) { display: flex; gap: .65rem; margin-bottom: .35rem; color: #c8baa0; font-size: .875rem; line-height: 1.4; }
+	.site-search :global(.search-result__title) { display: block; font-size: 1.125rem; line-height: 1.45; overflow-wrap: anywhere; }
+	.site-search :global(.search-result__copy) { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: .25rem; color: #aeb3b2; font-size: .9375rem; line-height: 1.55; overflow-wrap: anywhere; }
+	.site-search__empty { display: grid; justify-items: center; align-content: center; min-height: 13rem; gap: .65rem; padding: 1.5rem; text-align: center; }
+	.site-search__empty h3 { font-size: 1.2rem; font-weight: 400; line-height: 1.4; }
+	.site-search__empty p { max-width: 24rem; margin: 0; color: #aeb3b2; font-size: .9375rem; line-height: 1.6; }
+	.site-search__empty-orbit { width: 2.4rem; height: 2.4rem; margin-bottom: .4rem; border: 1px solid #ffffff21; border-radius: 50%; box-shadow: inset 0 0 0 .45rem #ffffff03; position: relative; }
+	.site-search__empty-orbit::after { content: ''; position: absolute; top: .15rem; right: .15rem; width: .3rem; height: .3rem; border-radius: 50%; background: #e2d4b4b3; }
+	.site-search__footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .35rem .8rem; padding: .8rem 1.5rem; border-top: 1px solid #ffffff12; color: #a4aaa9; font-size: .875rem; line-height: 1.5; }
+	.site-search__footer span { color: #828a88; }
+	.site-search button:focus-visible { outline: 1px solid #eee3ca; outline-offset: 3px; }
+	@media (max-width: 720px) {
+		.site-search { top: -1.8rem; right: .4rem; width: 7rem; }
+		.site-search__trigger { min-height: 1.65rem; padding-block: .2rem; gap: .4rem; }
+		.site-search__trigger kbd { display: none; }
+	}
+	@media (max-width: 480px) {
+		.site-search__dialog { width: calc(100vw - 1.25rem); max-height: calc(100svh - 1.5rem); border-radius: .8rem; }
+		.site-search__header { padding: 1.15rem 1rem 1rem; }
+		.site-search__field { margin-inline: 1rem; }
+		.site-search__filters { padding-inline: 1rem; gap: .15rem; }
+		.site-search__count { padding-inline: 1.1rem; }
+		.site-search__footer { padding-inline: 1rem; }
+		.site-search__footer span { display: none; }
+	}
+</style>

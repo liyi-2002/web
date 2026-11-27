@@ -47,7 +47,7 @@ const isEditable = (target: EventTarget | null) => target instanceof Element
 	&& Boolean(target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])'));
 
 /** Each chapter owns its phase; the surrounding folio continues to own its orbit. */
-export function enableContentLoops(tray: HTMLElement): { pause(): void; refresh(): void } {
+export function enableContentLoops(tray: HTMLElement): { pause(): void; refresh(): void; select(section: string, id: string): boolean } {
 	const loops: Loop[] = [];
 	for (const root of tray.querySelectorAll<HTMLElement>('[data-content-loop]')) {
 		const track = root.querySelector<HTMLElement>('[data-loop-track]');
@@ -335,7 +335,15 @@ export function enableContentLoops(tray: HTMLElement): { pause(): void; refresh(
 			const goal = nearestGoal(loop, index);
 			const centered = pressedIndex !== null ? loop.pressedCentered : loop.goal === null && Math.abs(goal - loop.phase) < .025;
 			// A content link opens only after its card has reached the front.
-			if (link && centered && loop.items[index].contains(link)) return;
+			if (link && centered && loop.items[index].contains(link)) {
+				const photoId = link.getAttribute('data-photo-id');
+				if (photoId) {
+					event.preventDefault();
+					event.stopPropagation();
+					document.dispatchEvent(new CustomEvent('folio:open-photo', { detail: { id: photoId } }));
+				}
+				return;
+			}
 			event.preventDefault();
 			event.stopPropagation();
 			releaseGesture(loop);
@@ -401,5 +409,16 @@ export function enableContentLoops(tray: HTMLElement): { pause(): void; refresh(
 	return {
 		pause() { paused = true; halt(); },
 		refresh() { paused = false; updateMeasurements(); },
+		select(section, id) {
+			const loop = loops.find(candidate => candidate.panel.dataset.page === section);
+			if (!loop || !active(loop)) return false;
+			const index = loop.items.findIndex(item => item.dataset.entryId === id);
+			if (index < 0) return false;
+			releaseGesture(loop);
+			lockHover(loop);
+			animateTo(loop, nearestGoal(loop, index));
+			loop.items[index].querySelector<HTMLElement>('a, button')?.focus({ preventScroll: true });
+			return true;
+		},
 	};
 }

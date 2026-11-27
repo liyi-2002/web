@@ -7,6 +7,7 @@ type Navigation = Destination & { push: boolean };
 function mountGallery(stage: HTMLElement) {
 	const tray = stage.querySelector<HTMLElement>('[data-content-tray]')!;
 	const pages = Array.from(tray.querySelectorAll<HTMLElement>('[data-page]'));
+	const glassLayers = pages.map(page => tray.querySelector<HTMLElement>(`[data-glass="${page.dataset.page}"]`)!);
 	const viewport = tray.parentElement!;
 	const rail = tray.querySelector<SVGSVGElement>('[data-orbit-rail]')!;
 	const tethers = Array.from(rail.querySelectorAll<SVGGElement>('[data-orbit-tether]')).map(group => ({
@@ -17,6 +18,12 @@ function mountGallery(stage: HTMLElement) {
 	}));
 	const dragging = enableCardDragging(tray);
 	const contentLoops = enableContentLoops(tray);
+	let pendingEntry: { section: string; id: string } | null = null;
+	const hasOverlay = () => Boolean(document.querySelector('dialog[open]'));
+	function revealEntry() {
+		if (!pendingEntry || hasOverlay()) return;
+		if (contentLoops.select(pendingEntry.section, pendingEntry.id)) pendingEntry = null;
+	}
 	let current = pages.findIndex(page => !page.hidden);
 	let phase = current;
 	let goal = current;
@@ -81,9 +88,16 @@ function mountGallery(stage: HTMLElement) {
 			const halfWidth = (width + 2) / 2;
 			const x = anchorX + halfWidth * scale * Math.cos(tilt) - width / 2;
 			const y = anchorY + halfWidth * scale * Math.sin(tilt) - height / 2;
-			page.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) rotate(' + sine * 8 + 'deg) scale(' + scale + ')';
-			page.style.opacity = String(Math.pow(front, 2.2));
-			page.style.zIndex = String(Math.round(front * 1000));
+			const transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) rotate(' + sine * 8 + 'deg) scale(' + scale + ')';
+			const opacity = String(Math.pow(front, 2.2));
+			const zIndex = String(Math.round(front * 1000));
+			// A fading ancestor would isolate a nested backdrop filter from the sky.
+			// Sibling glass and content share the same pose, depth and fade in this frame.
+			for (const layer of [glassLayers[index], page]) {
+				layer.style.transform = transform;
+				layer.style.opacity = opacity;
+				layer.style.zIndex = zIndex;
+			}
 			const tether = tethers[index];
 			// The far side of the wheel passes behind the visible semicircle.
 			const railVisibility = Math.min(1, Math.max(0, (cosine + .2) / .2));
@@ -97,6 +111,7 @@ function mountGallery(stage: HTMLElement) {
 	function setInteraction(index: number | null) {
 		pages.forEach((page, pageIndex) => {
 			page.hidden = false;
+			glassLayers[pageIndex].hidden = false;
 			page.inert = pageIndex !== index;
 			page.setAttribute('aria-hidden', String(pageIndex !== index));
 		});
@@ -117,7 +132,8 @@ function mountGallery(stage: HTMLElement) {
 		tray.removeAttribute('aria-busy');
 		setInteraction(current);
 		drawOrbit();
-		contentLoops.refresh();
+		if (hasOverlay()) contentLoops.pause();
+		else contentLoops.refresh();
 		dragging.reflow(next.page);
 		stage.dataset.section = next.page.dataset.page;
 		selectNavigation(current);
@@ -135,8 +151,9 @@ function mountGallery(stage: HTMLElement) {
 		}
 		if (push && next.url.href !== location.href) history.pushState(history.state, '', next.url);
 		stage.querySelector('[data-folio-status]')!.textContent = next.page.dataset.label!;
-		if (moveFocus) stage.querySelector<HTMLElement>('.folio-nav a[aria-current]')?.focus({ preventScroll: true });
+		if (moveFocus && !hasOverlay()) stage.querySelector<HTMLElement>('.folio-nav a[aria-current]')?.focus({ preventScroll: true });
 		if (next.url.hash) document.getElementById(decodeURIComponent(next.url.hash.slice(1)))?.scrollIntoView({ block: 'nearest' });
+		revealEntry();
 	}
 	function tick(time: number) {
 		frame = null;
@@ -183,15 +200,42 @@ function mountGallery(stage: HTMLElement) {
 	}
 	document.addEventListener('click', event => {
 		if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+		const photo = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-open-photo]') : null;
+		if (photo?.dataset.openPhoto) {
+			event.preventDefault();
+			document.dispatchEvent(new CustomEvent('folio:open-photo', { detail: { id: photo.dataset.openPhoto } }));
+			return;
+		}
 		const link = event.target instanceof Element
 			? event.target.closest<HTMLAnchorElement>('a[data-folio-link][href]') : null;
 		if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
 		const next = destination(link.href);
 		if (!next) return;
 		event.preventDefault();
+		pendingEntry = null;
 		request(next);
 	});
+	document.addEventListener('folio:select-entry', event => {
+		const detail = (event as CustomEvent<{ section?: string; id?: string }>).detail;
+		if (!detail || typeof detail.section !== 'string' || typeof detail.id !== 'string') return;
+		const page = pages.find(candidate => candidate.dataset.page === detail.section);
+		if (!page || !Array.from(page.querySelectorAll<HTMLElement>('[data-entry-id]')).some(item => item.dataset.entryId === detail.id)) return;
+		const next = destination(page.dataset.href!);
+		if (!next) return;
+		event.preventDefault();
+		pendingEntry = { section: detail.section, id: detail.id };
+		if (next.index === current && !target) { contentLoops.refresh(); revealEntry(); }
+		else request(next);
+	});
+	document.addEventListener('folio:overlay', () => {
+		if (hasOverlay()) { dragging.cancel(); contentLoops.pause(); }
+		else if (!target) { contentLoops.refresh(); revealEntry(); }
+	});
+	// A selection can wait while its chapter is blurred or temporarily unmeasured.
+	window.addEventListener('focus', revealEntry);
+	document.addEventListener('visibilitychange', () => { if (!document.hidden) revealEntry(); });
 	window.addEventListener('popstate', () => {
+		pendingEntry = null;
 		const next = destination(location.href);
 		if (next) request(next, false);
 	});
@@ -208,6 +252,7 @@ function mountGallery(stage: HTMLElement) {
 		measureOrbit();
 		pages.forEach(page => dragging.reflow(page));
 		drawOrbit();
+		revealEntry();
 	}).observe(tray);
 }
 

@@ -1,0 +1,49 @@
+---
+import type { SiteEntry } from '../data/site-content';
+interface Props { entries: SiteEntry[] }
+const items = Astro.props.entries.slice(0, 3);
+const labels = { sharing: '分享', notes: '手记', photography: '摄影' };
+---
+<section class="recent-updates" data-card-widget aria-labelledby="recent-heading">
+	<header><span lang="en">RECENT</span><h2 id="recent-heading">最近更新</h2></header>
+	{items.length ? (
+		<ol>
+			{items.map(entry => (
+				<li>
+					<a href={entry.href} data-open-photo={entry.photo ? entry.id : undefined}>
+						<div class="recent-updates__meta"><span>{labels[entry.section]}</span><time datetime={entry.updated.toISOString()}>{entry.updated.toISOString().slice(0, 10).replaceAll('-', '.')}</time></div>
+						<span class="recent-updates__title">{entry.title}</span>
+					</a>
+				</li>
+			))}
+		</ol>
+	) : (
+		<div class="recent-updates__empty"><p>新篇待续</p><span>分享、手记与影像<br />陆续更新。</span></div>
+	)}
+</section>
+<style>
+	.recent-updates { position: absolute; inset: 2.1rem 1rem 1rem; display: flex; flex-direction: column; gap: .8rem; color: #f4f3ee; text-shadow: 0 1px 6px #000; cursor: auto; touch-action: pan-y; }
+	.recent-updates header { flex: none; }
+	.recent-updates header > span { color: #d3cbb8; font: 400 .75rem/1.3 'Times New Roman', Times, serif; letter-spacing: .16em; }
+	.recent-updates h2 { margin-top: .25rem; font-size: clamp(1rem, 2.8cqw, 1.35rem); font-weight: 400; }
+	.recent-updates ol { list-style: none; margin: 0; padding: 0; overflow-y: auto; min-height: 0; scrollbar-width: thin; scrollbar-color: #ffffff33 transparent; }
+	.recent-updates li + li { border-top: 1px solid #ffffff14; }
+	.recent-updates a { display: block; padding: .65rem 0; text-decoration: none; }
+	.recent-updates a:hover .recent-updates__title { text-decoration: underline; text-underline-offset: .2em; }
+	.recent-updates a:focus-visible { outline: 1px solid #fff; outline-offset: -1px; }
+	.recent-updates__meta { display: flex; flex-wrap: wrap; gap: .15rem .5rem; color: #c9c9c4; font-size: .75rem; line-height: 1.4; }
+	.recent-updates__title { display: block; margin-top: .25rem; font-size: 1rem; line-height: 1.4; overflow-wrap: anywhere; }
+	.recent-updates__empty { margin-top: clamp(.2rem, 2cqh, 1rem); color: #deded6; }
+	.recent-updates__empty p { margin-bottom: .35rem; font-size: 1rem; }
+	.recent-updates__empty > span { font-size: .875rem; line-height: 1.6; }
+	@media (max-width: 720px) {
+		.recent-updates { inset: 1.9rem .65rem .65rem; gap: .35rem; }
+		.recent-updates header > span, .recent-updates__meta { display: none; }
+		.recent-updates h2 { margin: 0; font-size: 1rem; }
+		.recent-updates a { padding: .375rem 0; }
+		.recent-updates__title { margin: 0; font-size: .875rem; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+		.recent-updates__empty { margin-top: .25rem; }
+		.recent-updates__empty p { font-size: .875rem; }
+		.recent-updates__empty > span { font-size: .8125rem; line-height: 1.5; }
+	}
+</style>

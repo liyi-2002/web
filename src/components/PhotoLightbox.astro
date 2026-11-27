@@ -1,0 +1,107 @@
+---
+interface Photo {
+	id: string;
+	title: string;
+	src: string;
+	alt: string;
+	description?: string;
+	date?: string;
+	camera?: string;
+	location?: string;
+}
+interface Props { photos: Photo[] }
+const { photos } = Astro.props;
+const photoData = JSON.stringify(photos).replace(/</g, '\\u003c');
+---
+
+<photo-viewer>
+	<script type="application/json" data-photo-library set:html={photoData} />
+	<dialog class="photo-viewer__dialog" aria-labelledby="photo-viewer-title" aria-describedby="photo-viewer-help">
+		<header class="photo-viewer__header">
+			<p class="photo-viewer__label" lang="en">Photography</p>
+			<button class="photo-viewer__close" type="button" data-photo-close aria-label="关闭照片浏览">关闭 <kbd>Esc</kbd></button>
+		</header>
+		<figure class="photo-viewer__figure">
+			<div class="photo-viewer__media" data-photo-media aria-busy="false">
+				<div class="photo-viewer__image-host" data-photo-image></div>
+				<div class="photo-viewer__state" data-photo-state>
+					<p data-photo-status role="status" aria-live="polite"></p>
+					<button type="button" data-photo-retry hidden>重新加载</button>
+				</div>
+			</div>
+			<figcaption class="photo-viewer__caption">
+				<div class="photo-viewer__caption-copy">
+					<h2 id="photo-viewer-title" data-photo-title>摄影</h2>
+					<p class="photo-viewer__description" data-photo-description hidden></p>
+				</div>
+				<ul class="photo-viewer__metadata" data-photo-metadata aria-label="拍摄信息" hidden></ul>
+			</figcaption>
+		</figure>
+		<footer class="photo-viewer__navigation" aria-label="浏览照片">
+			<button type="button" data-photo-prev aria-label="上一张照片">上一张</button>
+			<p class="photo-viewer__counter" data-photo-counter aria-live="polite" aria-atomic="true"></p>
+			<button type="button" data-photo-next aria-label="下一张照片">下一张</button>
+		</footer>
+		<p class="sr-only" id="photo-viewer-help">使用左右方向键或左右滑动浏览照片，按 Escape 关闭。</p>
+	</dialog>
+</photo-viewer>
+
+<script>
+	import '../scripts/photo-lightbox';
+</script>
+
+<style>
+	photo-viewer { display: contents; }
+	.photo-viewer__dialog {
+		position: fixed; inset: 0; margin: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none;
+		padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+		border: 0; background: #07090df5; color: #f3f2ed; color-scheme: dark; overflow: auto;
+		font-family: var(--site-font); line-height: 1.5;
+	}
+	.photo-viewer__dialog[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 1rem; }
+	.photo-viewer__dialog::backdrop { background: #000000b8; }
+	.photo-viewer__header, .photo-viewer__navigation { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+	.photo-viewer__header { width: min(100%, 96rem); margin-inline: auto; }
+	.photo-viewer__label { font: 400 1.1rem/1 'Times New Roman', Times, serif; letter-spacing: .07em; color: #d8d8d4; }
+	.photo-viewer__dialog button {
+		appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: .65rem;
+		min-height: 2.75rem; padding: .45rem .9rem; border: 1px solid #ffffff29; border-radius: .4rem;
+		background: #ffffff04; color: inherit; cursor: pointer; font: inherit; font-size: 1rem;
+		transition: background-color 160ms, border-color 160ms;
+	}
+	.photo-viewer__dialog button:hover:not(:disabled) { border-color: #ffffff70; background: #ffffff0d; }
+	.photo-viewer__dialog button:focus-visible { outline: 2px solid #f1e3c3; outline-offset: 3px; }
+	.photo-viewer__dialog button:disabled { opacity: .3; cursor: default; }
+	.photo-viewer__close kbd { font: 400 .875rem/1 'Times New Roman', Times, serif; color: #a9aaa8; }
+	.photo-viewer__figure { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 1rem; width: min(100%, 96rem); min-height: 0; margin-inline: auto; }
+	.photo-viewer__media { position: relative; min-height: 6rem; overflow: hidden; touch-action: pan-y pinch-zoom; }
+	.photo-viewer__image-host { width: 100%; height: 100%; display: grid; place-items: center; }
+	.photo-viewer__image-host :global(img) {
+		display: block; width: 100%; height: 100%; min-height: 0; max-height: 100%; object-fit: contain;
+		user-select: none; -webkit-user-drag: none;
+	}
+	.photo-viewer__state { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; color: #cdcecc; }
+	.photo-viewer__state p { font-size: 1rem; }
+	.photo-viewer__caption { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; column-gap: 2rem; row-gap: .65rem; max-height: min(24dvh, 11rem); overflow: auto; scrollbar-width: thin; }
+	.photo-viewer__caption-copy { min-width: 0; flex: 1 1 22rem; overflow-wrap: anywhere; }
+	.photo-viewer__caption h2 { font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 400; line-height: 1.3; text-wrap: pretty; }
+	.photo-viewer__description { margin-top: .35rem; font-size: 1rem; color: #c5c6c3; line-height: 1.6; max-width: 62ch; white-space: pre-line; }
+	.photo-viewer__metadata { display: flex; flex-wrap: wrap; gap: .4rem 1.15rem; list-style: none; padding: 0; margin: .2rem 0 0; color: #aeb1af; font-size: .875rem; overflow-wrap: anywhere; }
+	.photo-viewer__navigation { justify-content: center; width: 100%; }
+	.photo-viewer__counter { min-width: 5rem; text-align: center; font: 400 1rem/1 'Times New Roman', Times, serif; color: #c2c5c3; font-variant-numeric: tabular-nums; }
+	@media (min-width: 900px) {
+		.photo-viewer__dialog { padding: 1.25rem clamp(1.5rem, 4vw, 4rem); }
+	}
+	@media (max-width: 560px) {
+		.photo-viewer__dialog[open] { gap: .75rem; }
+		.photo-viewer__figure { gap: .75rem; }
+		.photo-viewer__caption { max-height: 27dvh; }
+		.photo-viewer__close kbd { display: none; }
+	}
+	@media (max-height: 500px) and (orientation: landscape) {
+		.photo-viewer__dialog[open] { gap: .4rem; padding-block: .5rem; }
+		.photo-viewer__figure { grid-template-columns: minmax(0, 1fr) minmax(12rem, 25%); grid-template-rows: minmax(0, 1fr); }
+		.photo-viewer__caption { max-height: 100%; }
+		.photo-viewer__dialog button { min-height: 2.25rem; padding-block: .25rem; }
+	}
+</style>

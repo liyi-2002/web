@@ -43,12 +43,13 @@
 }
 
 /* The home page keeps its movable, pinned paper composition. */
-[data-page="home"] [data-card="letter"] { --card-x: 17%; --card-y: 16%; --card-width: min(43cqw, 43cqh); --card-ratio: .78; --card-angle: -5deg; }
-[data-page="home"] [data-card="postcard"] { --card-x: 46%; --card-y: 49%; --card-width: min(41cqw, 49cqh); --card-ratio: 1.45; --card-angle: 6deg; }
-[data-page="home"] [data-card="bookmark"] { --card-x: 76%; --card-y: 18%; --card-width: min(10cqw, 12cqh); --card-ratio: .32; --card-angle: 6deg; }
+[data-page="home"] { --home-calendar-width: min(calc(100cqw - 2.5rem), max(17rem, min(41cqw, 49cqh))); }
+[data-page="home"] [data-card="letter"] { --card-x: 5.5%; --card-y: 7%; --card-width: min(43cqw, 43cqh); --card-ratio: .78; --card-angle: -5deg; }
+[data-page="home"] [data-card="postcard"] { --card-x: 35%; --card-y: 22%; --card-width: var(--home-calendar-width); --card-ratio: 1.45; --card-angle: 6deg; }
+[data-page="home"] [data-card="bookmark"] { --card-x: calc(35% + var(--home-calendar-width) + 1rem); --card-y: 23.5%; --card-width: max(4rem, min(10cqw, 12cqh)); --card-ratio: .32; --card-angle: 6deg; }
 
 @media (max-width: 720px) {
-	[data-page="home"] [data-card="letter"] { --card-x: 12%; --card-y: 15%; --card-width: min(57cqw, 44cqh); }
-	[data-page="home"] [data-card="postcard"] { --card-x: 36%; --card-y: 55%; --card-width: min(53cqw, 49cqh); }
-	[data-page="home"] [data-card="bookmark"] { --card-x: 79%; --card-y: 21%; --card-width: min(11cqw, 12cqh); }
+	[data-page="home"] [data-card="letter"] { --card-x: 6%; --card-y: .75rem; --card-width: calc(100cqw - 7rem); --card-angle: -3deg; height: 10.5rem; aspect-ratio: auto; }
+	[data-page="home"] [data-card="postcard"] { --card-x: calc((100cqw - min(17rem, calc(100cqw - 2.5rem))) / 2); --card-y: calc(100% - 13.25rem); --card-width: min(17rem, calc(100cqw - 2.5rem)); --card-angle: 2deg; height: 12rem; aspect-ratio: auto; }
+	[data-page="home"] [data-card="bookmark"] { --card-x: calc(100% - 5.5rem); --card-y: .75rem; --card-width: 4rem; height: 10rem; aspect-ratio: auto; }
 }

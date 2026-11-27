@@ -1,9 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
 import SiteLayout from './SiteLayout.astro';
 import CardFinish from '../components/CardFinish.astro';
 import PaperPin from '../components/PaperPin.astro';
 import ContentLoop from '../components/ContentLoop.astro';
+import CardCalendar from '../components/CardCalendar.astro';
+import RecentUpdates from '../components/RecentUpdates.astro';
+import CardMoon from '../components/CardMoon.astro';
+import SiteSearch from '../components/SiteSearch.astro';
+import PhotoLightbox from '../components/PhotoLightbox.astro';
+import { getSiteContent } from '../data/site-content';
 import { SITE_SECTIONS as sections, SITE_TITLE } from '../consts';
 import { folioCards } from '../data/folio-cards';
 import '../styles/folio-cards.css';
@@ -11,9 +16,16 @@ const education = [
 	{ school: 'Zhejiang University', degree: 'M.S. in Agronomy & Seed Industry', dates: '2025–2028' },
 	{ school: 'Northeast Agricultural University', degree: 'B.S. in Smart Agriculture', dates: '2021–2025' },
 ];
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const entries = await getSiteContent();
+const searchEntries = entries.map(entry => ({
+	id: entry.id, section: entry.section, title: entry.title, description: entry.description,
+	tags: entry.tags, date: entry.updated.toISOString(), href: entry.href,
+}));
+const photos = entries.filter(entry => entry.photo).map(entry => ({
+	id: entry.id, title: entry.title, src: entry.photo!.src, alt: entry.photo!.alt,
+	description: entry.description, date: entry.date.toISOString(),
+	camera: entry.photo!.camera, location: entry.photo!.location,
+}));
 interface Props {
 	title: string;
 	description: string;
@@ -57,6 +69,7 @@ const { title, description, current } = Astro.props;
 
 		<div class="orbit-viewport">
 		<div class="content-tray" data-content-tray>
+			<SiteSearch entries={searchEntries} />
 			<svg class="orbit-rail" data-orbit-rail aria-hidden="true" focusable="false">
 				<defs>
 					<linearGradient id="orbit-rail-fade" x1="0" y1="0" x2="0" y2="1">
@@ -88,6 +101,8 @@ const { title, description, current } = Astro.props;
 				))}
 			</svg>
 			{sections.map(({ key, label, href, title: pageTitle, description: pageDescription }) => (
+				<>
+				<div class="tray-glass" data-glass={key} hidden={key !== current} aria-hidden="true"></div>
 				<section
 					class="tray-panel"
 					data-page={key}
@@ -105,23 +120,23 @@ const { title, description, current } = Astro.props;
 						<div class:list={['tray-card', 'tray-card--' + card.shape]} role="group" aria-label={label + ' · ' + card.label}>
 							<CardFinish shape={card.shape} />
 							<PaperPin tone={card.id === 'postcard' ? 'champagne' : 'silver'} />
+							{card.id === 'postcard' && <CardCalendar />}
+							{card.id === 'letter' && <RecentUpdates entries={entries} />}
+							{card.id === 'bookmark' && <CardMoon />}
 						</div>
 					</div>
 					)) : (
-						<ContentLoop section={key} label={label} items={key === 'notes' ? posts.map(post => ({
-							title: post.data.title,
-							href: '/notes/' + post.id + '/',
-							date: post.data.pubDate,
-							description: post.data.description,
-						})) : []} />
+						<ContentLoop section={key} label={label} items={entries.filter(entry => entry.section === key)} />
 					)}
 				</section>
+				</>
 			))}
 		</div>
 		</div>
 		<p class="sr-only" id="paper-instructions">拖动卡纸可调整位置。聚焦后可用方向键移动，按住 Shift 可加大步幅，Esc 可取消当前拖动。</p>
 		<p class="sr-only" aria-live="polite" data-folio-status></p>
 	</div>
+	<PhotoLightbox photos={photos} />
 </SiteLayout>
 
 <script>
