@@ -115,12 +115,16 @@ export function enableCardDragging(tray: HTMLElement) {
 		return paper ? byPaper.get(paper) : undefined;
 	}
 
-	cards.forEach((card, index) => {
+	const layersByPage = new Map<HTMLElement, number>();
+	cards.forEach(card => {
+		const page = card.wrapper.closest<HTMLElement>('[data-page]')!;
+		const layer = (layersByPage.get(page) ?? 0) + 1;
+		layersByPage.set(page, layer);
 		card.paper.tabIndex = 0;
 		card.paper.dataset.draggable = '';
 		card.paper.setAttribute('aria-describedby', 'paper-instructions');
 		card.paper.setAttribute('aria-roledescription', '可移动卡纸');
-		card.wrapper.style.zIndex = String(index % 3 + 1);
+		card.wrapper.style.zIndex = String(layer);
 		if (card.paper.querySelector('.tray-content')) {
 			card.paper.dataset.hasContent = '';
 			for (const side of ['top', 'right', 'bottom', 'left']) {

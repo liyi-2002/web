@@ -1,8 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
 import SiteLayout from './SiteLayout.astro';
-import FormattedDate from '../components/FormattedDate.astro';
+import CardFinish from '../components/CardFinish.astro';
+import PaperPin from '../components/PaperPin.astro';
+import ContentLoop from '../components/ContentLoop.astro';
 import { SITE_SECTIONS as sections, SITE_TITLE } from '../consts';
+import { folioCards } from '../data/folio-cards';
+import '../styles/folio-cards.css';
 const education = [
 	{ school: 'Zhejiang University', degree: 'M.S. in Agronomy & Seed Industry', dates: '2025–2028' },
 	{ school: 'Northeast Agricultural University', degree: 'B.S. in Smart Agriculture', dates: '2021–2025' },
@@ -95,34 +99,22 @@ const { title, description, current } = Astro.props;
 					inert={key !== current}
 					aria-label={label}
 				>
-					<div class="tray-card-wrap tray-card-wrap--back">
-						<div class="tray-card" role="group" aria-label={label + '卡纸 1'}></div>
-					</div>
-					<div class="tray-card-wrap tray-card-wrap--middle">
-						<div class="tray-card" role="group" aria-label={label + '卡纸 2'}></div>
-					</div>
-					<div class="tray-card-wrap tray-card-wrap--front">
-						<div class="tray-card" role="group" aria-label={label + '卡纸 3'}>
-							<h2 class="sr-only" tabindex="-1">{label}</h2>
-							{key === 'notes' && posts.length > 0 && (
-								<div class="tray-content" id="articles">
-									<header class="notes-heading">
-										<h3>手记</h3>
-										<a href="/rss.xml">RSS 订阅</a>
-									</header>
-									<ul class="notes-list">
-										{posts.map(post => (
-											<li>
-												<FormattedDate date={post.data.pubDate} />
-												<h4><a href={'/notes/' + post.id + '/'}>{post.data.title}</a></h4>
-												{post.data.description && <p>{post.data.description}</p>}
-											</li>
-										))}
-									</ul>
-								</div>
-							)}
+					<h2 class="sr-only" tabindex="-1">{label}</h2>
+					{key === 'home' ? folioCards.home.map(card => (
+					<div class="tray-card-wrap" data-card={card.id} data-tone={card.tone}>
+						<div class:list={['tray-card', 'tray-card--' + card.shape]} role="group" aria-label={label + ' · ' + card.label}>
+							<CardFinish shape={card.shape} />
+							<PaperPin tone={card.id === 'postcard' ? 'champagne' : 'silver'} />
 						</div>
 					</div>
+					)) : (
+						<ContentLoop section={key} label={label} items={key === 'notes' ? posts.map(post => ({
+							title: post.data.title,
+							href: '/notes/' + post.id + '/',
+							date: post.data.pubDate,
+							description: post.data.description,
+						})) : []} />
+					)}
 				</section>
 			))}
 		</div>

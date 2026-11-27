@@ -1,0 +1,54 @@
+/* Clear, neutral surfaces leave the night sky visible through each silhouette. */
+.tray-card-wrap[data-tone="mist"] { --night-paper: #05070933; }
+.tray-card-wrap[data-tone="smoke"] { --night-paper: #03040545; }
+.tray-card-wrap[data-tone="pearl"] { --night-paper: #0b0c0e26; }
+.tray-card-wrap[data-card] {
+	left: var(--card-x);
+	top: var(--card-y);
+	width: var(--card-width);
+	aspect-ratio: var(--card-ratio);
+}
+.tray-card-wrap[data-card] .tray-card { --paper-angle: var(--card-angle, 0deg); position: relative; }
+.tray-card::before, .tray-card::after { pointer-events: none; }
+.folio-site.has-moonlit-valley .tray-card-wrap[data-card] .tray-card {
+	background-image:
+		linear-gradient(116deg, #ffffff0d, transparent 34%, transparent 76%, #ffffff03),
+		radial-gradient(ellipse at 5% 0%, #ffffff05, transparent 60%);
+	box-shadow: inset 0 1px 0 #ffffff12, inset 1px 0 0 #ffffff05,
+		0 1px 2px #00000014, 5px 12px 24px -16px #00000052;
+}
+/* The wrapper casts the shadow so cut silhouettes retain their depth. */
+.tray-card-wrap:has(.tray-card--bookmark) {
+	filter: drop-shadow(0 1px 1px #0000001a) drop-shadow(3px 7px 9px #00000026);
+}
+.folio-site.has-moonlit-valley .tray-card-wrap[data-card][data-dragging] .tray-card {
+	box-shadow: inset 0 1px 0 #ffffff29, 0 0 0 1px #ffffff12,
+		8px 20px 32px -18px #00000070;
+}
+.tray-card.tray-card--pinned { border-radius: .2rem; }
+.tray-card--pinned::before {
+	content: ''; position: absolute; inset: 1px; border-radius: inherit;
+	border-top: 1px solid #ffffff12; border-left: 1px solid #ffffff05;
+}
+.tray-card--pinned::after {
+	content: ''; position: absolute; left: 8%; right: 8%; bottom: 1px; height: 6%;
+	background: radial-gradient(ellipse at bottom, #00000012, transparent 70%);
+}
+.tray-card.tray-card--bookmark {
+	clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 87%, 0 100%);
+	border-radius: .25rem .25rem 0 0;
+}
+.tray-card--bookmark::after {
+	content: ''; position: absolute; inset: 22% 13% 15%; border-inline: 1px solid #ffffff12;
+}
+
+/* The home page keeps its movable, pinned paper composition. */
+[data-page="home"] [data-card="letter"] { --card-x: 17%; --card-y: 16%; --card-width: min(43cqw, 43cqh); --card-ratio: .78; --card-angle: -5deg; }
+[data-page="home"] [data-card="postcard"] { --card-x: 46%; --card-y: 49%; --card-width: min(41cqw, 49cqh); --card-ratio: 1.45; --card-angle: 6deg; }
+[data-page="home"] [data-card="bookmark"] { --card-x: 76%; --card-y: 18%; --card-width: min(10cqw, 12cqh); --card-ratio: .32; --card-angle: 6deg; }
+
+@media (max-width: 720px) {
+	[data-page="home"] [data-card="letter"] { --card-x: 12%; --card-y: 15%; --card-width: min(57cqw, 44cqh); }
+	[data-page="home"] [data-card="postcard"] { --card-x: 36%; --card-y: 55%; --card-width: min(53cqw, 49cqh); }
+	[data-page="home"] [data-card="bookmark"] { --card-x: 79%; --card-y: 21%; --card-width: min(11cqw, 12cqh); }
+}

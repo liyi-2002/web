@@ -1,4 +1,5 @@
 import { enableCardDragging } from './tray-drag';
+import { enableContentLoops } from './content-loop';
 
 type Destination = { page: HTMLElement; index: number; url: URL };
 type Navigation = Destination & { push: boolean };
@@ -15,6 +16,7 @@ function mountGallery(stage: HTMLElement) {
 		endpoint: group.querySelector<SVGCircleElement>('[data-orbit-endpoint]')!,
 	}));
 	const dragging = enableCardDragging(tray);
+	const contentLoops = enableContentLoops(tray);
 	let current = pages.findIndex(page => !page.hidden);
 	let phase = current;
 	let goal = current;
@@ -115,6 +117,7 @@ function mountGallery(stage: HTMLElement) {
 		tray.removeAttribute('aria-busy');
 		setInteraction(current);
 		drawOrbit();
+		contentLoops.refresh();
 		dragging.reflow(next.page);
 		stage.dataset.section = next.page.dataset.page;
 		selectNavigation(current);
@@ -164,6 +167,7 @@ function mountGallery(stage: HTMLElement) {
 		if (!target && next.index === current) return;
 		dragging.cancel();
 		restoreFocus ||= tray.contains(document.activeElement);
+		contentLoops.pause();
 		target = { ...next, push };
 		goal = nearestPhase(next.index);
 		setInteraction(null);

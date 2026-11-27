@@ -1,0 +1,21 @@
+---
+interface Props { shape: string }
+const { shape } = Astro.props;
+const cutEdges: Record<string, string> = {
+	bookmark: 'M.5 .5H99.5V99L50 87L.5 99Z',
+};
+---
+<span class="card-sheen" aria-hidden="true"></span>
+{cutEdges[shape] && (
+	<svg class="paper-cut-edge" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+		<path d={cutEdges[shape]} vector-effect="non-scaling-stroke" />
+	</svg>
+)}
+
+<style>
+	.card-sheen, .paper-cut-edge { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border-radius: inherit; }
+	.card-sheen {
+		background: linear-gradient(112deg, #ffffff05, transparent 28%, transparent 78%, #ffffff03);
+	}
+	.paper-cut-edge { fill: none; stroke: #ffffff47; stroke-width: .7px; }
+</style>

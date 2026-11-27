@@ -1,0 +1,83 @@
+---
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	section: string;
+	label: string;
+	items?: { title: string; href: string; date?: Date; description?: string }[];
+}
+const { section, label, items = [] } = Astro.props;
+// Empty cards preview the interaction until this section has real entries.
+const entries = items.length ? items : Array.from({ length: 8 }, () => null);
+---
+
+<div class="content-loop" data-content-loop tabindex="0" role="region" aria-roledescription="三维循环内容列表" aria-label={label + '内容'} aria-describedby={'loop-help-' + section}>
+	<div class="content-loop__track" data-loop-track role="list">
+		{entries.map((entry, index) => (
+			<div class="content-loop__item" data-loop-item role="listitem">
+				{entry ? (
+					<a class="content-loop__card" href={entry.href}>
+						<div class="content-loop__copy">
+							{entry.date && <FormattedDate date={entry.date} />}
+							<h3>{entry.title}</h3>
+							{entry.description && <p>{entry.description}</p>}
+						</div>
+					</a>
+				) : (
+					<button type="button" class="content-loop__card" aria-label={'空白内容卡片 ' + (index + 1)} aria-pressed={index === 0}></button>
+				)}
+			</div>
+		))}
+	</div>
+	<p class="sr-only" id={'loop-help-' + section}>鼠标停在左右侧可连续转动，移回中间或移出框停止。点击任意卡片，可沿最短路径快速转到前方；再次点击前方内容卡片可打开内容。也支持左右方向键和手机横向滑动。</p>
+	<p class="sr-only" data-loop-status aria-live="polite" aria-atomic="true"></p>
+</div>
+
+<style>
+	.content-loop {
+		position: absolute; inset: 0; overflow: hidden; border-radius: inherit;
+		touch-action: pan-y; outline-offset: -5px;
+		perspective: var(--loop-perspective, 850px); perspective-origin: 50% 46%;
+	}
+	.content-loop__track {
+		position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none;
+	}
+	.content-loop__item {
+		position: absolute; top: 0; left: 0; width: min(40%, 42cqh); height: 52%;
+		transform-origin: center; will-change: transform; pointer-events: auto;
+	}
+	/* Render one centered card before the interaction script initializes. */
+	.content-loop:not([data-loop-ready]) .content-loop__item { top: 28%; left: 50%; transform: translateX(-50%); }
+	.content-loop:not([data-loop-ready]) .content-loop__item:not(:first-child) { visibility: hidden; }
+	.content-loop__card {
+		position: relative; display: flex; align-items: flex-end; width: 100%; height: 100%;
+		padding: 0; appearance: none; font: inherit; text-align: inherit; cursor: pointer;
+		overflow: hidden; border-radius: .65rem; text-decoration: none;
+		border: 1px solid #ffffff42; border-right-color: #ffffff1c; border-bottom-color: #ffffff2b;
+		background: linear-gradient(145deg, #ffffff09, transparent 38%, #0000000a), #05070938;
+		box-shadow: inset 0 1px 0 #ffffff12, inset 1px 0 0 #ffffff05, 0 10px 24px -16px #00000066;
+		color: #f3f3f3; user-select: none; -webkit-user-drag: none;
+		transition: border-color 180ms, box-shadow 180ms;
+	}
+	.content-loop__card::before {
+		content: ''; position: absolute; inset: 1px; border-radius: inherit; pointer-events: none;
+		background:
+			linear-gradient(90deg, transparent 4%, #ffffff33 27%, transparent 75%) top / 100% 1px no-repeat,
+			radial-gradient(ellipse at 0 0, #ffffff05, transparent 48%);
+	}
+	.content-loop__item[data-loop-current] .content-loop__card {
+		border-color: #ffffff66; border-right-color: #ffffff2b; border-bottom-color: #ffffff38;
+		box-shadow: inset 0 1px 0 #ffffff1a, 0 12px 28px -18px #00000080;
+	}
+	@media (hover: hover) {
+		.content-loop__card:hover { border-color: #ffffff80; box-shadow: inset 0 1px 0 #ffffff26, 0 0 12px -4px #ffffff12, 0 12px 28px -18px #00000080; }
+	}
+	.content-loop__card:focus-visible { outline: 2px solid #f2f2f2; outline-offset: -4px; }
+	.content-loop__copy {
+		position: relative; width: 100%; padding: clamp(1rem, 3cqw, 2rem); overflow-wrap: anywhere;
+		background: linear-gradient(transparent, #050709c9); text-shadow: 0 1px 8px #00000080;
+	}
+	.content-loop__copy time { color: #d0d0d0; font-size: .875rem; }
+	.content-loop__copy h3 { margin-block: .75rem; font-weight: 400; font-size: clamp(1.25rem, 3cqw, 1.9rem); }
+	.content-loop__copy p { color: #dedede; font-size: 1rem; line-height: 1.6; }
+</style>
