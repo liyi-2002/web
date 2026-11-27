@@ -21,7 +21,8 @@ const { title, description, current } = Astro.props;
 <SiteLayout title={title} description={description} folio>
 	<div class="folio-stage" data-folio data-section={current}>
 		<aside class="folio-index" aria-label="个人信息与目录">
-			<h1 class="folio-name" lang="en"><a href="/" data-folio-link>{SITE_TITLE}</a></h1>
+			<h1 class="sr-only" lang="en">{SITE_TITLE}</h1>
+			<div class="folio-name" aria-hidden="true"></div>
 			<nav aria-label="主导航" class="folio-nav">
 				<ul>
 					{sections.map(({ key, label, href }) => (

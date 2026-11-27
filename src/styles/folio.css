@@ -73,13 +73,34 @@
 }
 .folio-site.has-moonlit-valley .tray-panel::before { border-color: #e9eef41c; }
 .folio-site.has-moonlit-valley .tray-card {
-	--ink: #303a3d;
-	--muted-ink: #636e71;
-	--accent: #627d82;
-	--rule: #919a9b45;
+	--ink: #f0f2f6;
+	--muted-ink: #c5ceda;
+	--accent: #dce4f2;
+	--rule: #d1dce633;
 	color: var(--ink);
-	color-scheme: light;
-	box-shadow: 0 1px 2px #050a144d, 2px 6px 12px -4px #050b1859, 10px 22px 36px -14px #03071080;
+	color-scheme: dark;
+	background-color: var(--night-paper, #263344a6);
+	background-image:
+		linear-gradient(132deg, #eef3ff20, #d8e0ed05 44%, #070c181a),
+		radial-gradient(ellipse at 12% 0%, #e7edff14, transparent 65%);
+	border-color: #e7eef959;
+	border-right-color: #d0dcf32e;
+	border-bottom-color: #a5b4cd38;
+	box-shadow:
+		inset 0 1px 0 #f3f6ff24,
+		inset 1px 0 0 #d4dff412,
+		0 1px 2px #02050c33,
+		3px 8px 16px -8px #02051073,
+		12px 24px 38px -20px #02061199;
+}
+.has-moonlit-valley .tray-card-wrap--back { --night-paper: #62708566; }
+.has-moonlit-valley .tray-card-wrap--middle { --night-paper: #252e43a3; }
+.has-moonlit-valley .tray-card-wrap--front { --night-paper: #a0aabb73; }
+.folio-site.has-moonlit-valley .tray-card:has(.tray-content) {
+	--night-paper: #202b3ce8;
+}
+.folio-site.has-moonlit-valley .tray-card-wrap[data-dragging] .tray-card {
+	box-shadow: inset 0 1px 0 #f3f6ff3b, 0 0 0 1px #dae7ff24, 10px 28px 40px -18px #020611b3;
 }
 
 .folio-stage {
@@ -99,7 +120,6 @@
 	font: 400 clamp(1.625rem, 2.5vw, 2.5rem)/1.1 'Times New Roman', Times, serif;
 	letter-spacing: -.025em;
 }
-.folio-name a { text-decoration: none; }
 .folio-nav { margin-block: 1.8rem 1.7rem; max-width: 15rem; }
 .folio-nav ul { list-style: none; padding: 0; margin: 0; }
 .folio-nav a {
